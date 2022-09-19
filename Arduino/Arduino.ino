@@ -32,6 +32,10 @@ struct SubPayLoad
 };
 
 
+// KOBUKI SETTINGS
+int vel = 100;
+int ang = 1;
+
 // This is the queue of sub-payloads to be executed once a message is fully interpreted
 ArduinoQueue<SubPayLoad> taskQueue(50);
 
@@ -41,9 +45,9 @@ void setup() {
   // Serial1 connects to bluetooth
   Serial1.begin(115200);
   // Wait until you recieve a bluetooth message
-  while(!Serial1.available()) {
-    continue;
-  }
+//  while(!Serial1.available()) {
+//    continue;
+//  }
   // For console logging purposes
   Serial.println("0001---------");
 }
@@ -54,7 +58,8 @@ int storage_array[1000];
 Vector<int> msg(storage_array);
 
 void loop() {
-  // put your main code here, to run repeatedly:
+  sendKobuki();
+  delay(30);
   while(Serial1.available()){
     int current = Serial1.read();
     if(current == '\n') {
@@ -64,9 +69,12 @@ void loop() {
     // Stores each character in the msg vector
     msg.push_back(current);
   }
+  if(!taskQueue.isEmpty())
+    executeSPL(taskQueue.dequeue());
 }
 
 void interpretMessage() {
+  Serial.println("Interpreting Message...");
   if(!validateMessage()) {
     msg.clear();
     return;
@@ -126,4 +134,62 @@ void printSPL(SubPayLoad spl) {
         break;
       Serial.println(spl.msg[j]);
     }
+}
+
+void sendKobuki() {
+  byte kob_msg[10];
+  kob_msg[0] = '\xaa';
+  kob_msg[1] = '\x55';
+  kob_msg[2] = '\x06';
+  kob_msg[3] = '\x01';
+  kob_msg[4] = '\x04';
+  kob_msg[5] = (vel >> 0) & 255;
+  kob_msg[6] = (vel >> 8) & 255;
+  kob_msg[7] = (ang >> 0) & 255;
+  kob_msg[8] = (ang >> 8) & 255;
+  kob_msg[9] = '\x00';
+  for(int i = 0; i < 10; ++i) {
+    Serial.write(kob_msg[i]);
+  }
+}
+
+void executeSPL(SubPayLoad spl) {
+  Serial.println("Executing SPL...");
+  switch(spl.id) {
+    case 1:
+      break;
+    case 2:
+      break;
+    case 3:
+      break;
+    case 4:
+      motorSPLDict(spl);
+      break;
+    case 5:
+      break;
+    default:
+      break;
+  }
+}
+
+void motorSPLDict(SubPayLoad spl) {
+  Serial.println("Determining Action...");
+  switch(spl.msg[0]) {
+    case 1:
+      break;
+    case 2:
+      setMotors(spl);
+      break;
+    case 3:
+      break;
+    default:
+      break;
+  }
+}
+
+void setMotors(SubPayLoad spl) {
+  Serial.println("Setting Motors!");
+  vel = spl.msg[1] + (spl.msg[2] * 256);
+  ang = spl.msg[3] + (spl.msg[4] * 256);
+  Serial.println("VEL: " + String(vel) + " ANG: " + String(ang));
 }
