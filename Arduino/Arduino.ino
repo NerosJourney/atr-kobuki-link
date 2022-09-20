@@ -60,6 +60,11 @@ Vector<int> msg(storage_array);
 void loop() {
   sendKobuki();
   delay(30);
+  if(vel != 0 || ang != 0) {
+    delay(1000);
+    vel = 0;
+    ang = 0;
+  }
   while(Serial1.available()){
     int current = Serial1.read();
     if(current == '\n') {

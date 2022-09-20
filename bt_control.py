@@ -15,12 +15,16 @@ ser = serial.Serial(f'/dev/{bluetooth_serial}', 115200, timeout=10)
 #     # ser.write(b'\xcc\xff\x55\x01\x04\x02\x01\x09\x11\xff\n')
 
 # move forward for 1 second
-def forward():
-    ser.write(b'\xcc\xff\x55\x01\x07\x04\x04\x02\x84\x00\x00\x00\xff\n')
+def forward_fast():
+    ser.write(b'\xcc\xff\x55\x01\x07\x04\x04\x02\xfe\x00\x00\x00\xff\n')
 
-# turn counter-clockwise for 1 second
+def forward():
+    ser.write(b'\xcc\xff\x55\x01\x07\x04\x04\x02\x8e\x00\x00\x00\xff\n')
+
+
+# turn counter-clockwise 90 degrees in 1 second
 def turn():
-    ser.write(b'\xcc\xff\x55\x01\x07\x04\x04\x02\x84\x00\x01\x00\xff\n')
+    ser.write(b'\xcc\xff\x55\x01\x07\x04\x04\x02\xfe\x00\x01\x00\xff\n')
 
 def stop():
     ser.write(b'\xcc\xff\x55\x01\x07\x04\x04\x02\x00\x00\x00\x00\xff\n')
@@ -34,5 +38,9 @@ while True:
     x = input()
     if x == 'f':
         forward()
+    elif x == 'ff':
+        forward_fast()
     elif x == 't':
         turn()
+    else:
+        stop()
