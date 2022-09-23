@@ -181,6 +181,7 @@ void motorSPLDict(SubPayLoad spl) {
   Serial.println("Determining Action...");
   switch(spl.msg[0]) {
     case 1:
+      setMotorsReverse(spl);
       break;
     case 2:
       setMotors(spl);
@@ -195,6 +196,13 @@ void motorSPLDict(SubPayLoad spl) {
 void setMotors(SubPayLoad spl) {
   Serial.println("Setting Motors!");
   vel = spl.msg[1] + (spl.msg[2] * 256);
+  ang = spl.msg[3] + (spl.msg[4] * 256);
+  Serial.println("VEL: " + String(vel) + " ANG: " + String(ang));
+}
+
+void setMotorsReverse(SubPayLoad spl) {
+  Serial.println("Setting Motors!");
+  vel = -(spl.msg[1] + (spl.msg[2] * 256));
   ang = spl.msg[3] + (spl.msg[4] * 256);
   Serial.println("VEL: " + String(vel) + " ANG: " + String(ang));
 }

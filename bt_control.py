@@ -21,10 +21,18 @@ def forward_fast():
 def forward():
     ser.write(b'\xcc\xff\x55\x01\x07\x04\x04\x02\x8e\x00\x00\x00\xff\n')
 
+def backward_fast():
+    ser.write(b'\xcc\xff\x55\x01\x07\x04\x04\x01\xfe\x00\x00\x00\xff\n')
+
+def backward():
+    ser.write(b'\xcc\xff\x55\x01\x07\x04\x04\x01\x8e\x00\x00\x00\xff\n')
 
 # turn counter-clockwise 90 degrees in 1 second
-def turn():
+def turnLeft():
     ser.write(b'\xcc\xff\x55\x01\x07\x04\x04\x02\xfe\x00\x01\x00\xff\n')
+
+def turnRight():
+    ser.write(b'\xcc\xff\x55\x01\x07\x04\x04\x01\xfe\x00\x01\x00\xff\n')
 
 def stop():
     ser.write(b'\xcc\xff\x55\x01\x07\x04\x04\x02\x00\x00\x00\x00\xff\n')
@@ -40,7 +48,13 @@ while True:
         forward()
     elif x == 'ff':
         forward_fast()
-    elif x == 't':
-        turn()
+    elif x == 'b':
+        backward()
+    elif x == 'bb':
+        backward_fast()
+    elif x == 'r':
+        turnRight()
+    elif x == 'l':
+        turnLeft()
     else:
         stop()
